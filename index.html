@@ -16,21 +16,17 @@
     </div>
 
     <div id="gameArea" class="game-area">
-      <!-- lane lines -->
       <div class="lane-line lane-1"></div>
       <div class="lane-line lane-2"></div>
 
-      <!-- player -->
       <div id="player" class="player"></div>
 
-      <!-- start screen -->
       <div id="startScreen" class="overlay-screen">
         <h2>Mini Endless Runner</h2>
-        <p>Use Left and Right Arrow keys to dodge obstacles.</p>
+        <p>Use arrow keys or tap buttons to move.</p>
         <button id="startBtn">Start Game</button>
       </div>
 
-      <!-- game over screen -->
       <div id="gameOverScreen" class="overlay-screen hidden">
         <h2>Game Over</h2>
         <p>Your score: <span id="finalScore">0</span></p>
@@ -38,10 +34,15 @@
       </div>
     </div>
 
+    <div class="mobile-controls">
+      <button id="leftBtn">⬅ Left</button>
+      <button id="rightBtn">Right ➡</button>
+    </div>
+
     <div class="instructions">
       <p><strong>How to play:</strong></p>
-      <p>Use <strong>Left Arrow</strong> and <strong>Right Arrow</strong> to change lanes.</p>
-      <p>Avoid the falling obstacles!</p>
+      <p>Move left and right to avoid obstacles.</p>
+      <p>Works on keyboard and mobile buttons.</p>
     </div>
   </div>
 
