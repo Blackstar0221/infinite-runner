@@ -1,162 +1,181 @@
-* {
-  box-sizing: border-box;
+const gameArea = document.getElementById("gameArea");
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+const speedEl = document.getElementById("speed");
+const startScreen = document.getElementById("startScreen");
+const gameOverScreen = document.getElementById("gameOverScreen");
+const finalScoreEl = document.getElementById("finalScore");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const leftBtn = document.getElementById("leftBtn");
+const rightBtn = document.getElementById("rightBtn");
+
+let lane = 1; // 0 = left, 1 = middle, 2 = right
+let score = 0;
+let speed = 4;
+let gameRunning = false;
+let animationFrame;
+let obstacleInterval;
+let scoreInterval;
+let speedInterval;
+let obstacles = [];
+
+function getLaneX(laneIndex) {
+  const areaWidth = gameArea.clientWidth;
+  const laneWidth = areaWidth / 3;
+  const playerWidth = player.offsetWidth;
+  return laneWidth * laneIndex + laneWidth / 2 - playerWidth / 2;
 }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #87ceeb, #dbeafe);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 20px;
+function updatePlayerPosition() {
+  player.style.left = `${getLaneX(lane)}px`;
 }
 
-.game-wrapper {
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
+function moveLeft() {
+  if (!gameRunning) return;
+  if (lane > 0) {
+    lane--;
+    updatePlayerPosition();
+  }
 }
 
-h1 {
-  margin-bottom: 15px;
-  color: #1f2937;
+function moveRight() {
+  if (!gameRunning) return;
+  if (lane < 2) {
+    lane++;
+    updatePlayerPosition();
+  }
 }
 
-.hud {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #111827;
+function createObstacle() {
+  if (!gameRunning) return;
+
+  const obstacle = document.createElement("div");
+  obstacle.classList.add("obstacle");
+
+  const obstacleLane = Math.floor(Math.random() * 3);
+  obstacle.dataset.lane = obstacleLane;
+  obstacle.dataset.y = -100;
+
+  obstacle.style.left = `${getLaneX(obstacleLane)}px`;
+  obstacle.style.top = "-100px";
+
+  gameArea.appendChild(obstacle);
+  obstacles.push(obstacle);
 }
 
-.score-box,
-.speed-box {
-  background: white;
-  padding: 10px 14px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
+function isColliding(a, b) {
+  const aRect = a.getBoundingClientRect();
+  const bRect = b.getBoundingClientRect();
 
-.game-area {
-  position: relative;
-  width: 100%;
-  height: 600px;
-  background: #4b5563;
-  border: 6px solid #1f2937;
-  border-radius: 16px;
-  overflow: hidden;
-  margin: 0 auto;
-}
-
-/* lane lines */
-.lane-line {
-  position: absolute;
-  top: 0;
-  width: 4px;
-  height: 100%;
-  background: repeating-linear-gradient(
-    to bottom,
-    white 0px,
-    white 30px,
-    transparent 30px,
-    transparent 60px
+  return !(
+    aRect.bottom < bRect.top ||
+    aRect.top > bRect.bottom ||
+    aRect.right < bRect.left ||
+    aRect.left > bRect.right
   );
-  opacity: 0.8;
 }
 
-.lane-1 {
-  left: 33.333%;
-  transform: translateX(-50%);
-}
+function updateObstacles() {
+  for (let i = obstacles.length - 1; i >= 0; i--) {
+    const obstacle = obstacles[i];
+    let y = parseFloat(obstacle.dataset.y);
+    y += speed;
+    obstacle.dataset.y = y;
+    obstacle.style.top = `${y}px`;
 
-.lane-2 {
-  left: 66.666%;
-  transform: translateX(-50%);
-}
+    if (isColliding(player, obstacle)) {
+      endGame();
+      return;
+    }
 
-/* player */
-.player {
-  position: absolute;
-  bottom: 20px;
-  width: 60px;
-  height: 90px;
-  background: #22c55e;
-  border: 3px solid #14532d;
-  border-radius: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-}
-
-/* obstacle */
-.obstacle {
-  position: absolute;
-  width: 60px;
-  height: 90px;
-  background: #ef4444;
-  border: 3px solid #7f1d1d;
-  border-radius: 12px;
-  top: -100px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-}
-
-/* game over overlay */
-.game-over {
-  position: absolute;
-  inset: 0;
-  background: rgba(17, 24, 39, 0.88);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  z-index: 20;
-}
-
-.hidden {
-  display: none;
-}
-
-#restartBtn {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  background: #fbbf24;
-  color: #111827;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-#restartBtn:hover {
-  opacity: 0.9;
-}
-
-.instructions {
-  margin-top: 14px;
-  background: white;
-  border-radius: 12px;
-  padding: 14px;
-  color: #1f2937;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.instructions p {
-  margin: 6px 0;
-}
-
-@media (max-width: 500px) {
-  .game-area {
-    height: 500px;
-  }
-
-  .player,
-  .obstacle {
-    width: 50px;
-    height: 80px;
+    if (y > gameArea.clientHeight) {
+      obstacle.remove();
+      obstacles.splice(i, 1);
+    }
   }
 }
+
+function gameLoop() {
+  if (!gameRunning) return;
+  updateObstacles();
+  animationFrame = requestAnimationFrame(gameLoop);
+}
+
+function startGame() {
+  clearGame();
+
+  lane = 1;
+  score = 0;
+  speed = 4;
+  gameRunning = true;
+
+  scoreEl.textContent = score;
+  speedEl.textContent = 1;
+
+  startScreen.classList.add("hidden");
+  gameOverScreen.classList.add("hidden");
+
+  updatePlayerPosition();
+
+  obstacleInterval = setInterval(createObstacle, 900);
+
+  scoreInterval = setInterval(() => {
+    if (!gameRunning) return;
+    score++;
+    scoreEl.textContent = score;
+  }, 300);
+
+  speedInterval = setInterval(() => {
+    if (!gameRunning) return;
+    speed += 0.6;
+    speedEl.textContent = Math.floor(speed - 3);
+  }, 3000);
+
+  gameLoop();
+}
+
+function endGame() {
+  gameRunning = false;
+
+  cancelAnimationFrame(animationFrame);
+  clearInterval(obstacleInterval);
+  clearInterval(scoreInterval);
+  clearInterval(speedInterval);
+
+  finalScoreEl.textContent = score;
+  gameOverScreen.classList.remove("hidden");
+}
+
+function clearGame() {
+  cancelAnimationFrame(animationFrame);
+  clearInterval(obstacleInterval);
+  clearInterval(scoreInterval);
+  clearInterval(speedInterval);
+
+  obstacles.forEach(obstacle => obstacle.remove());
+  obstacles = [];
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") {
+    moveLeft();
+  } else if (e.key === "ArrowRight") {
+    moveRight();
+  }
+});
+
+leftBtn.addEventListener("click", moveLeft);
+rightBtn.addEventListener("click", moveRight);
+startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", startGame);
+
+window.addEventListener("resize", () => {
+  updatePlayerPosition();
+  obstacles.forEach(obstacle => {
+    const obstacleLane = parseInt(obstacle.dataset.lane, 10);
+    obstacle.style.left = `${getLaneX(obstacleLane)}px`;
+  });
+});
+
+updatePlayerPosition();
