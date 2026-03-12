@@ -10,7 +10,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding: 20px;
+  padding: 12px;
 }
 
 .game-wrapper {
@@ -22,11 +22,13 @@ body {
 h1 {
   margin-bottom: 15px;
   color: #1f2937;
+  font-size: 1.8rem;
 }
 
 .hud {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
   font-weight: bold;
   color: #111827;
@@ -34,6 +36,7 @@ h1 {
 
 .score-box,
 .speed-box {
+  flex: 1;
   background: white;
   padding: 10px 14px;
   border-radius: 10px;
@@ -43,7 +46,9 @@ h1 {
 .game-area {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: 70vh;
+  min-height: 420px;
+  max-height: 650px;
   background: #4b5563;
   border: 6px solid #1f2937;
   border-radius: 16px;
@@ -79,8 +84,10 @@ h1 {
 .player {
   position: absolute;
   bottom: 20px;
-  width: 60px;
-  height: 90px;
+  width: 16%;
+  max-width: 60px;
+  min-width: 42px;
+  aspect-ratio: 2 / 3;
   background: #22c55e;
   border: 3px solid #14532d;
   border-radius: 12px;
@@ -92,8 +99,10 @@ h1 {
 
 .obstacle {
   position: absolute;
-  width: 60px;
-  height: 90px;
+  width: 16%;
+  max-width: 60px;
+  min-width: 42px;
+  aspect-ratio: 2 / 3;
   background: #ef4444;
   border: 3px solid #7f1d1d;
   border-radius: 12px;
@@ -121,7 +130,9 @@ h1 {
 }
 
 #startBtn,
-#restartBtn {
+#restartBtn,
+#leftBtn,
+#rightBtn {
   padding: 12px 20px;
   border: none;
   border-radius: 10px;
@@ -133,8 +144,22 @@ h1 {
 }
 
 #startBtn:hover,
-#restartBtn:hover {
+#restartBtn:hover,
+#leftBtn:hover,
+#rightBtn:hover {
   opacity: 0.9;
+}
+
+.mobile-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.mobile-controls button {
+  flex: 1;
+  max-width: 180px;
 }
 
 .instructions {
@@ -151,13 +176,20 @@ h1 {
 }
 
 @media (max-width: 500px) {
-  .game-area {
-    height: 500px;
+  h1 {
+    font-size: 1.5rem;
   }
 
-  .player,
-  .obstacle {
-    width: 50px;
-    height: 80px;
+  .game-area {
+    height: 60vh;
+    min-height: 380px;
+  }
+
+  #startBtn,
+  #restartBtn,
+  #leftBtn,
+  #rightBtn {
+    font-size: 0.95rem;
+    padding: 12px 14px;
   }
 }
