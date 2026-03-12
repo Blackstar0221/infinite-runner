@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Endless Runner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-wrapper">
+    <h1>Mini Endless Runner</h1>
+
+    <div class="hud">
+      <div class="score-box">Score: <span id="score">0</span></div>
+      <div class="speed-box">Speed: <span id="speed">1</span></div>
+    </div>
+
+    <div id="gameArea" class="game-area">
+      <!-- lane lines -->
+      <div class="lane-line lane-1"></div>
+      <div class="lane-line lane-2"></div>
+
+      <!-- player -->
+      <div id="player" class="player"></div>
+
+      <!-- game over screen -->
+      <div id="gameOverScreen" class="game-over hidden">
+        <h2>Game Over</h2>
+        <p>Your score: <span id="finalScore">0</span></p>
+        <button id="restartBtn">Restart</button>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <p><strong>How to play:</strong></p>
+      <p>Use <strong>Left Arrow</strong> and <strong>Right Arrow</strong> to change lanes.</p>
+      <p>Avoid the falling obstacles!</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
